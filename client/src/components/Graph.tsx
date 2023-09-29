@@ -13,52 +13,59 @@ interface Class {
 
 export default function Graph(props : any) {
     const classList : Class[] = props.data;
-    const classCodeList : string[] = classList.map((cl : Class) => cl['code']);
-    let map = new Map();
 
-    let nodeList : any[] = [];
-    for (let i = 0; i < classCodeList.length; i++) {
-        const key = classCodeList[i]
-        // SKIP CS396 AND 397 FOR NOW
-        if (key === 'CS396' || key === 'CS397') {
+    const nodeList : any[] = [];
+    for (let i = 0; i < classList.length; i++) {
+        const cl = classList[i];
+        const code = cl['code'];
+        const title = cl['name'];
+        // skip cs396 and cs397
+        if (code === 'CS396' || code === 'CS397') {
             continue;
         }
-        const val = i + 1;
-        map.set(key, val);
-        nodeList.push({ id : val, label : key });
+        nodeList.push({ id : i, label : code , title : title });
     }
 
-    let nodes = new DataSet(nodeList);
+    const nodes = new DataSet(nodeList);
 
-    let edgeList : any[] = [];
-    let num = 0;
+    const edgeList : any[] = [];
+    let edgeCount = 0;
     classList.forEach((cl : Class) => {
-        const classCode = cl['code'];
-        if (classCode !== 'CS396' && classCode !== 'CS397') {
-            const prereqList = cl['prereqs'];
-            let prereqCodes : string[] = [];
+        const code = cl['code'];
+        const prereqList = cl['prereqs'];
+        
+        if (code !== 'CS396' && code !== 'CS397') {
+            const prereqCodes : string[] = [];
+
+            // parse prereq list
             prereqList.forEach((str : string) => {
                 if (str.includes('/')) {
-                    let parts = str.split('/');
+                    const parts = str.split('/');
                     prereqCodes.push(...parts);
                 }
-                else {
+                // ignore consent for now
+                else if (str !== 'CONSENT') {
                     prereqCodes.push(str);
                 }
             })
-            prereqCodes.forEach((code : string) => {
-                edgeList.push({ id : num, from : map.get(code), to : map.get(classCode) });
-                num += 1;
+
+            // add edges
+            const getNodeId = (code : string) => {
+                return nodeList.filter(node => node.label === code)[0].id
+            }
+            prereqCodes.forEach((prereqCode : string) => {
+                edgeList.push({ id : edgeCount, from : getNodeId(prereqCode), to : getNodeId(code) });
+                edgeCount += 1;
             })
         }
     })
 
-    let edges = new DataSet(edgeList);
+    const edges = new DataSet(edgeList);
 
-    let container = document.getElementById('network');
+    const container = document.getElementById('network');
     if (container) {
-        let data = { nodes, edges };
-        let options = {
+        const data = { nodes, edges };
+        const options = {
             physics: {
                 enabled: true,
                 barnesHut: {
