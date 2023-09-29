@@ -1,22 +1,15 @@
 import React from 'react';
 import './Graph.css';
+import Progress from './Progress';
 import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
 import 'vis-network/styles/vis-network.css';
 
-interface Class {
-    code : string;
-    name : string;
-    prereqs : string[];
-    areas : string[];
-    units : number;
-}
-
 export default function Graph(props : any) {
-    const classList : Class[] = props.data;
+    const classList : any[] = props.data;
 
     const nodeList : any[] = [];
     for (let i = 0; i < classList.length; i++) {
-        const cl : Class = classList[i];
+        const cl : any = classList[i];
         const code : string = cl['code'];
         nodeList.push({ id : i, label : code , data : cl });
     }
@@ -25,7 +18,7 @@ export default function Graph(props : any) {
 
     const edgeList : any[] = [];
     let edgeCount : number = 0;
-    classList.forEach((cl : Class) => {
+    classList.forEach((cl : any) => {
         const code : string = cl['code'];
         const name : string = cl['name'];
         const prereqList : string[] = cl['prereqs'];
@@ -137,6 +130,9 @@ export default function Graph(props : any) {
                 const connectedEdges = network.getConnectedEdges(nodeId).map(id => Number(id));
                 if (!('opacity' in node) || node.opacity === 1) {
                     nodes.updateOnly({ id : nodeId, opacity : 0.2 });
+                    console.log(props.addToProgress)
+                    props.addToProgress(nodeId, node.data.areas);
+
                     // const prereqs = node.data.prereqs;
                     connectedEdges.forEach((edgeId) => {
                         const edge = edges.get(edgeId)
@@ -154,12 +150,17 @@ export default function Graph(props : any) {
                 } else {
                     // set nodes and edges back to normal
                     nodes.updateOnly({ id : nodeId, opacity : 1 });
+                    // props.removeFromProgress(nodeId);
+
                     connectedEdges.forEach((edgeId) => {
+                        const edge = edges.get(edgeId);
                         edges.updateOnly({ id : edgeId, hidden : false })
                         // reset prerequisities
                         changeConnectedPrereqs(nodeId, edgeId, false)
-                    })
 
+                        nodes.updateOnly({ id : edge.to, color : outColor , font : { size : 40 }});
+                        nodes.updateOnly({ id : edge.from, color : inColor, font : { size : 40 }});
+                    })
                 }
             }
         })

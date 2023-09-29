@@ -9,9 +9,9 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 300px; /* Adjust the width as needed */
+    width: 290px; /* Adjust the width as needed */
     background-color: #EEE4D3;
-    border: 1px solid #ccc;
+    border: 1px solid #EEE4D3;
     border-radius: 5px;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
