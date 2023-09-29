@@ -18,10 +18,6 @@ export default function Graph(props : any) {
     for (let i = 0; i < classList.length; i++) {
         const cl : Class = classList[i];
         const code : string = cl['code'];
-        // skip cs396 and cs397
-        if (code === 'CS396' || code === 'CS397') {
-            continue;
-        }
         nodeList.push({ id : i, label : code , data : cl });
     }
 
@@ -31,29 +27,32 @@ export default function Graph(props : any) {
     let edgeCount : number = 0;
     classList.forEach((cl : Class) => {
         const code : string = cl['code'];
+        const name : string = cl['name'];
         const prereqList : string[] = cl['prereqs'];
         
-        if (code !== 'CS396' && code !== 'CS397') {
-            const prereqCodes : string[] = [];
+        const prereqCodes : string[] = [];
 
-            // parse prereq list
-            prereqList.forEach((str : string) => {
-                if (str.includes('/')) {
-                    const parts : string[] = str.split('/');
-                    prereqCodes.push(...parts);
-                }
-                else {
-                    prereqCodes.push(str);
-                }
-            })
+        // parse prereq list
+        prereqList.forEach((str : string) => {
+            if (str.includes('/')) {
+                const parts : string[] = str.split('/');
+                prereqCodes.push(...parts);
+            }
+            else {
+                prereqCodes.push(str);
+            }
+        })
 
-            // add edges
-            const getNodeId = (code : string) => nodeList.filter(node => node.label === code)[0].id;
-            prereqCodes.forEach((prereqCode : string) => {
-                edgeList.push({ id : edgeCount, from : getNodeId(prereqCode), to : getNodeId(code) });
-                edgeCount += 1;
-            })
-        }
+        const getIdByCode = (code : string) => nodeList.filter(node => node.label === code)[0].id;
+        const getIdByName = (name : string) => nodeList.filter(node => node.data.name === name)[0].id;
+        
+        // add edges
+        prereqCodes.forEach((prereqCode : string) => {
+            const prereqId = getIdByCode(prereqCode);
+            const nodeId = (code === 'CS396' || code === 'CS397') ? getIdByName(name) : getIdByCode(code);
+            edgeList.push({ id : edgeCount, from : prereqId, to : nodeId });
+            edgeCount += 1;
+        })
     })
 
     const edges = new DataSet(edgeList);
