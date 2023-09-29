@@ -18,6 +18,11 @@ function App() {
   return (
     <div className="App">
         <Graph data={ data }/>
+        {/* <div className="progress">
+          <div className="progress-container"><div className="progress-bar"></div></div>
+          <div className="progress-container"> <div className="progress-bar"></div></div>
+          <div className="progress-container"><div className="progress-bar"></div></div>
+        </div> */}
     </div>
   );
 }

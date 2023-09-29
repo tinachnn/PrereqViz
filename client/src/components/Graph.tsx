@@ -23,7 +23,7 @@ export default function Graph(props : any) {
         if (code === 'CS396' || code === 'CS397') {
             continue;
         }
-        nodeList.push({ id : i, label : code , title : title });
+        nodeList.push({ id : i, label : code , data : cl });
     }
 
     const nodes = new DataSet(nodeList);
@@ -83,6 +83,7 @@ export default function Graph(props : any) {
                 size: 100,
                 font: {
                     size: 30,
+                    face: 'Roboto'
                 },
                 color: {
                     background: nodeColor,
@@ -155,6 +156,19 @@ export default function Graph(props : any) {
                     }
                 });
             }
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                const cl = node.data;
+                const matches =  cl.code.match(/([a-zA-Z]+)([0-9-]+)/);
+                let dpt = matches[1];
+                if (dpt === 'CS') {
+                    dpt = 'COMP_SCI';
+                }
+                const code = matches[2];
+                sidebar.innerHTML = `<h3>${dpt + ' ' + code}</h3><p>${cl.name}</h3>`;
+                sidebar.style.display = 'block';
+            }
         })
 
         // remove highlights on blur
@@ -169,11 +183,19 @@ export default function Graph(props : any) {
                 nodes.updateOnly({ id : edge.to , color : options.nodes.color , font : { size : 30 }})
                 nodes.updateOnly({ id : edge.from , color : options.nodes.color , font : { size : 30 }})
             });
+
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.style.display = 'none';
+            }
         })
 
     }
 
     return (
-        <div id="network" className={ props.theme }></div>
+        <div>
+            <div id="network"></div>
+            <div id="sidebar"></div>
+        </div>
     )
 }
