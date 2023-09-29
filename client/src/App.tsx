@@ -17,9 +17,7 @@ function App() {
   
   return (
     <div className="App">
-      <header className="App-header">
-        <Graph data={ data } />
-      </header>
+        <Graph data={ data }/>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Graph.css';
 import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
 import 'vis-network/styles/vis-network.css';
@@ -63,6 +63,12 @@ export default function Graph(props : any) {
     const container = document.getElementById('network');
     if (container) {
         const data = { nodes, edges };
+
+        const nodeColor = '#EEE4D3';
+        const hoverColor = '#A8CCC9';
+        const inColor = '#EACBD2';
+        const outColor = '#A2D897';
+
         const options = {
             physics: {
                 enabled: true,
@@ -79,10 +85,10 @@ export default function Graph(props : any) {
                     size: 30,
                 },
                 color: {
-                    background: '#EEE4D3',
-                    border: '#EEE4D3',
-                    highlight: '#A8CCC9',
-                    hover : '#A8CCC9'
+                    background: nodeColor,
+                    border: nodeColor,
+                    highlight: hoverColor,
+                    hover : hoverColor
                 },
                 opacity: 1
             },
@@ -141,11 +147,11 @@ export default function Graph(props : any) {
                 connectedEdges.forEach((edgeId) => {
                     const edge = edges.get(edgeId)
                     if (edge.from === nodeId) {
-                        edges.updateOnly({ id : edgeId , color : '#A2D897'})
-                        nodes.updateOnly({ id : edge.to, color : '#A2D897', font : { size : 40 }})
+                        edges.updateOnly({ id : edgeId , color : outColor })
+                        nodes.updateOnly({ id : edge.to, color : outColor, font : { size : 40 }})
                     } else {
-                        edges.updateOnly({ id : edgeId , color : '#EACBD2'})
-                        nodes.updateOnly({ id : edge.from, color : '#EACBD2', font : { size : 40 }})
+                        edges.updateOnly({ id : edgeId , color : inColor })
+                        nodes.updateOnly({ id : edge.from, color : inColor , font : { size : 40 }})
                     }
                 });
             }
@@ -160,14 +166,14 @@ export default function Graph(props : any) {
             connectedEdges.forEach((edgeId) => {
                 const edge = edges.get(edgeId)
                 edges.updateOnly({ id : edgeId , color : options.edges.color})
-                nodes.updateOnly({ id : edge.to, color : options.nodes.color , font : { size : 30 }})
-                nodes.updateOnly({ id : edge.from, color : options.nodes.color , font : { size : 30 }})
+                nodes.updateOnly({ id : edge.to , color : options.nodes.color , font : { size : 30 }})
+                nodes.updateOnly({ id : edge.from , color : options.nodes.color , font : { size : 30 }})
             });
         })
 
     }
 
     return (
-        <div id="network"></div>
+        <div id="network" className={ props.theme }></div>
     )
 }
