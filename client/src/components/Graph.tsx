@@ -42,8 +42,7 @@ export default function Graph(props : any) {
                     const parts : string[] = str.split('/');
                     prereqCodes.push(...parts);
                 }
-                // ignore consent for now
-                else if (str !== 'CONSENT') {
+                else {
                     prereqCodes.push(str);
                 }
             })
@@ -163,7 +162,7 @@ export default function Graph(props : any) {
                 const dpt = matches[1].replace('CS', 'COMP_SCI');
                 const code = matches[2];
 
-                sidebar.innerHTML = `<h3>${dpt + ' ' + code}</h3><h3>${cl.name}</h3><p>${cl.description}</p>`
+                sidebar.innerHTML = `<h3>${dpt + ' ' + code}</h3><h3>${cl.name}</h3><p>${cl.description}</p>`;
                 if (cl.offered.length > 0) {
                     const fmtTerms = cl.offered.map((term : string) => {
                         const szn = term.substring(0, term.length - 2);
@@ -171,7 +170,11 @@ export default function Graph(props : any) {
                         const yr = '20' + term.substring(term.length - 2);
                         return sznCap + ' ' + yr;
                     })
-                    sidebar.innerHTML += `<p>Offered : ${fmtTerms.join(', ')}</p>`
+                    sidebar.innerHTML += `<p>Offered : ${fmtTerms.join(', ')}</p>`;
+                }
+
+                if ('consent' in cl && cl.consent) {
+                    sidebar.innerHTML += `<p>Instructor consent required</p>`;
                 }
                 sidebar.style.display = 'block';
             }
