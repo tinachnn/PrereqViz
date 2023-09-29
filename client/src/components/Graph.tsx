@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Graph.css';
 import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
 import 'vis-network/styles/vis-network.css';
@@ -74,11 +74,12 @@ export default function Graph(props : any) {
                     size: 30,
                 },
                 color: {
-                    background: '#F3EFE0',
-                    border: '#F3EFE0',
+                    background: '#EEE4D3',
+                    border: '#EEE4D3',
                     highlight: '#A8CCC9',
                     hover : '#A8CCC9'
-                }
+                },
+                opacity: 1
             },
             edges: {
                 arrows: 'to',
@@ -88,53 +89,68 @@ export default function Graph(props : any) {
                 length: 500
             },
             interaction: {
-                dragView: true,
-                zoomView: true,
-                hover: true,
+                hover: true
             }
         };
         const network = new Network(container, data, options);
-
-        // network.on('click', (event) => {
-        //     console.log(event);
-        //     if (event.nodes.length > 0) {
-        //         const nodeId = event.node;
-        //         if (nodes.get(nodeId)) {
-        //             nodes.updateOnly({ id : nodeId, color : { opacity : 0.2 } })
-        //         }
-        //     } else {
-        //         console.log('no nodes')
-        //     }
-        // })
-
-        network.on('hoverNode',  (event) => {
-            const nodeId = event.node;
-
-            nodes.updateOnly({ id : nodeId, font : { size : 40 } })
-
-            const connectedEdges = network.getConnectedEdges(nodeId);
-
-            connectedEdges.forEach((edgeId) => {
-                const edge = edges.get(edgeId)
-                if (edge.from == nodeId) {
-                    edges.updateOnly({ id : edgeId , color : '#A2D897'})
-                    nodes.updateOnly({ id : edge.to, color : '#A2D897', font : { size : 40 }})
+        
+        // toggle opaquenes on click
+        network.on('click', (event) => {
+            console.log(event);
+            network.selectNodes([]);
+            if (event.nodes.length > 0) {
+                const nodeId : number = event.nodes[0];
+                const node : any = nodes.get(nodeId);
+                const connectedEdges = network.getConnectedEdges(nodeId);
+                console.log(connectedEdges)
+                if (!('opacity' in node) || node.opacity === 1) {
+                    connectedEdges.forEach((edgeId) => {
+                        const edge = edges.get(edgeId);
+                        edges.updateOnly({ id : edgeId, hidden : true });
+                        nodes.updateOnly({ id : nodeId , font : { size : 30 }})
+                        nodes.updateOnly({ id : edge.to, color : options.nodes.color , font : { size : 30 }});
+                        nodes.updateOnly({ id : edge.from, color : options.nodes.color , font : { size : 30 }});
+                    })
+                    nodes.updateOnly({ id : nodeId, opacity : 0.2 });
                 } else {
-                    edges.updateOnly({ id : edgeId , color : '#EACBD2'})
-                    nodes.updateOnly({ id : edge.from, color : '#EACBD2', font : { size : 40 }})
+                    connectedEdges.forEach((edgeId) => {
+                        edges.updateOnly({ id : edgeId, hidden : false })
+                    })
+                    nodes.updateOnly({ id : nodeId, opacity : 1 });
                 }
-            });
+            }
         })
 
+        // highlight incoming nodes and edges '#EACBD2, outgoing nodes and edges #A2D897
+        network.on('hoverNode',  (event) => {
+            const nodeId : number = event.node;
+            const node : any = nodes.get(nodeId);
+
+            if (!('opacity' in node) || node.opacity === 1) {
+                nodes.updateOnly({ id : nodeId, font : { size : 40 } })
+
+                const connectedEdges = network.getConnectedEdges(nodeId);
+                connectedEdges.forEach((edgeId) => {
+                    const edge = edges.get(edgeId)
+                    if (edge.from === nodeId) {
+                        edges.updateOnly({ id : edgeId , color : '#A2D897'})
+                        nodes.updateOnly({ id : edge.to, color : '#A2D897', font : { size : 40 }})
+                    } else {
+                        edges.updateOnly({ id : edgeId , color : '#EACBD2'})
+                        nodes.updateOnly({ id : edge.from, color : '#EACBD2', font : { size : 40 }})
+                    }
+                });
+            }
+        })
+
+        // remove highlights on blur
         network.on('blurNode', (event) => {
             const nodeId = event.node;
-            nodes.updateOnly({ id : nodeId ,font : { size : 30 } })
-
+            // const node = nodes.get(nodeId);
             const connectedEdges = network.getConnectedEdges(nodeId);
 
             connectedEdges.forEach((edgeId) => {
                 const edge = edges.get(edgeId)
-                network.selectEdges([edgeId]);
                 edges.updateOnly({ id : edgeId , color : options.edges.color})
                 nodes.updateOnly({ id : edge.to, color : options.nodes.color , font : { size : 30 }})
                 nodes.updateOnly({ id : edge.from, color : options.nodes.color , font : { size : 30 }})
@@ -146,7 +162,6 @@ export default function Graph(props : any) {
     }
 
     return (
-        <div id="network">
-        </div>
+        <div id="network"></div>
     )
 }
