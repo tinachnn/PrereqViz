@@ -45,7 +45,7 @@ export default function Graph(props : any) {
 
         const getIdByCode = (code : string) => nodeList.filter(node => node.label === code)[0].id;
         const getIdByName = (name : string) => nodeList.filter(node => node.data.name === name)[0].id;
-        
+
         // add edges
         prereqCodes.forEach((prereqCode : string) => {
             const prereqId = getIdByCode(prereqCode);
@@ -102,20 +102,49 @@ export default function Graph(props : any) {
             }
         };
         const network = new Network(container, data, options);
+
+        const changeConnectedPrereqs = (nodeId : number, edgeId : number, hide : boolean) => {
+            const edge = edges.get(edgeId);
+            if (edge.from === nodeId) {
+                const destinationNodeId = edge.to
+                const destinationNode : any = nodes.get(destinationNodeId)
+                const prereqs = destinationNode.data.prereqs;
+                prereqs.forEach((str : string) => {
+                    if (str.includes('/') && str.includes(nodes.get(nodeId).label)) {
+                        const parts : string[] = str.split('/');
+                        const destinationEdges = network.getConnectedEdges(destinationNodeId);
+
+                        const otherIds = destinationEdges.filter((edgeId) => {
+                            const edge = edges.get(edgeId);
+                            const fromNode : any = nodes.get(edge.from);
+                            const fromCode : string = 'label' in fromNode ? fromNode.label : '';
+                            return parts.includes(fromCode)
+                        })
+                        // get edge from part to destination
+                        otherIds.forEach(id => edges.updateOnly({ id : id, hidden : hide }));
+                    }
+                })
+            }
+        }
         
         // toggle opaquenes on click
         network.on('click', (event) => {
             if (event.nodes.length > 0) {
                 network.selectNodes([]);
                 const nodeId : number = event.nodes[0];
+                // console.log(nodeId);
                 const node : any = nodes.get(nodeId);
-                const connectedEdges = network.getConnectedEdges(nodeId);
+                const connectedEdges = network.getConnectedEdges(nodeId).map(id => Number(id));
                 if (!('opacity' in node) || node.opacity === 1) {
                     nodes.updateOnly({ id : nodeId, opacity : 0.2 });
+                    // const prereqs = node.data.prereqs;
                     connectedEdges.forEach((edgeId) => {
-                        const edge = edges.get(edgeId);
+                        const edge = edges.get(edgeId)
                         // hide edges
                         edges.updateOnly({ id : edgeId, hidden : true });
+
+                        // if outbound, check if the destinationNode has a prereq of node.code OR ...
+                        changeConnectedPrereqs(nodeId, edgeId, true)
 
                         // set node and edges to default
                         nodes.updateOnly({ id : nodeId , font : { size : 30 }})
@@ -127,7 +156,10 @@ export default function Graph(props : any) {
                     nodes.updateOnly({ id : nodeId, opacity : 1 });
                     connectedEdges.forEach((edgeId) => {
                         edges.updateOnly({ id : edgeId, hidden : false })
+                        // reset prerequisities
+                        changeConnectedPrereqs(nodeId, edgeId, false)
                     })
+
                 }
             }
         })
@@ -144,12 +176,14 @@ export default function Graph(props : any) {
                 const connectedEdges = network.getConnectedEdges(nodeId);
                 connectedEdges.forEach((edgeId) => {
                     const edge = edges.get(edgeId)
-                    if (edge.from === nodeId) {
-                        edges.updateOnly({ id : edgeId , color : outColor })
-                        nodes.updateOnly({ id : edge.to, color : outColor, font : { size : 40 }})
-                    } else {
-                        edges.updateOnly({ id : edgeId , color : inColor })
-                        nodes.updateOnly({ id : edge.from, color : inColor , font : { size : 40 }})
+                    if (!edge.hidden) {
+                        if (edge.from === nodeId) {
+                            edges.updateOnly({ id : edgeId , color : outColor })
+                            nodes.updateOnly({ id : edge.to, color : outColor, font : { size : 40 }})
+                        } else {
+                            edges.updateOnly({ id : edgeId , color : inColor })
+                            nodes.updateOnly({ id : edge.from, color : inColor , font : { size : 40 }})
+                        }
                     }
                 });
             }
