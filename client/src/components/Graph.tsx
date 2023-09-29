@@ -18,7 +18,6 @@ export default function Graph(props : any) {
     for (let i = 0; i < classList.length; i++) {
         const cl : Class = classList[i];
         const code : string = cl['code'];
-        const title : string = cl['name'];
         // skip cs396 and cs397
         if (code === 'CS396' || code === 'CS397') {
             continue;
@@ -161,12 +160,19 @@ export default function Graph(props : any) {
             if (sidebar) {
                 const cl = node.data;
                 const matches =  cl.code.match(/([a-zA-Z]+)([0-9-]+)/);
-                let dpt = matches[1];
-                if (dpt === 'CS') {
-                    dpt = 'COMP_SCI';
-                }
+                const dpt = matches[1].replace('CS', 'COMP_SCI');
                 const code = matches[2];
-                sidebar.innerHTML = `<h3>${dpt + ' ' + code}</h3><p>${cl.name}</h3>`;
+
+                sidebar.innerHTML = `<h3>${dpt + ' ' + code}</h3><h3>${cl.name}</h3><p>${cl.description}</p>`
+                if (cl.offered.length > 0) {
+                    const fmtTerms = cl.offered.map((term : string) => {
+                        const szn = term.substring(0, term.length - 2);
+                        const sznCap = szn.charAt(0).toUpperCase() + szn.slice(1);
+                        const yr = '20' + term.substring(term.length - 2);
+                        return sznCap + ' ' + yr;
+                    })
+                    sidebar.innerHTML += `<p>Offered : ${fmtTerms.join(', ')}</p>`
+                }
                 sidebar.style.display = 'block';
             }
         })
