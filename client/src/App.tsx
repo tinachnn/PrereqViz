@@ -2,32 +2,57 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import Graph from './components/Graph';
 import Progress from './components/Progress';
+import AreasDialog from './components/AreasDialog';
 
 function App() {
   const [data, setData] = useState([]);
   const [progress, setProgress] = useState<{ id: number, areas: string[]}[]>([]);
 
+  const [open, setOpen] = useState(false);
+  const [current, setCurrent] = useState<{ id: number, areas: string[]}>();
+
+  const [selectedValue, setSelectedValue] = useState<string>();
+
   useEffect(() => {
     fetch('http://localhost:5001/record')
       .then(response => response.json())
       .then(response => setData(response))
-      .catch(error => console.log(error))
+      .catch(error => console.log(error));
+
+    setProgress([]);
   }, [])
 
+  useEffect(() => {
+    if (selectedValue && current) {
+      setProgress(progress => [...progress, { id : current.id , areas : [selectedValue]}])
+    }
+  }, [selectedValue, current])
+
   const addToProgress = (id : number, areas : string[]) => {
-    setProgress(progress => [...progress, { id , areas }]);
+    if (areas.length > 1) {
+      setCurrent({ id , areas })
+      setOpen(true)
+    } else {
+      setProgress(progress => [...progress, { id , areas}]);
+    }
   };
 
   const removeFromProgress = (id : number) => {
     setProgress(progress => progress.filter(item => item.id !== id));
   };
+
+  const handleClose = (value: string) => {
+      setOpen(false);
+      setSelectedValue(value);
+  };
   
-  const graph = useMemo(() => <Graph data={data} addToProgress={addToProgress} removeFromProgress={removeFromProgress} />, [data])
+  const graph = useMemo(() => <Graph classList={data} addToProgress={addToProgress} removeFromProgress={removeFromProgress} />, [data])
 
   return (
     <div className="App">
       { graph }
       <Progress progress={ progress }/>
+      { current && <AreasDialog current = { current } selectedValue={ current.areas[0] } open={ open } onClose={ handleClose }/>}
     </div>
   );
 }

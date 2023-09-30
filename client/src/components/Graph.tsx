@@ -5,7 +5,8 @@ import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
 import 'vis-network/styles/vis-network.css';
 
 export default function Graph(props : any) {
-    const classList : any[] = props.data;
+    // const classList : any[] = props.data;
+    const { classList } = props
 
     const nodeList : any[] = [];
     for (let i = 0; i < classList.length; i++) {
@@ -125,12 +126,10 @@ export default function Graph(props : any) {
             if (event.nodes.length > 0) {
                 network.selectNodes([]);
                 const nodeId : number = event.nodes[0];
-                // console.log(nodeId);
                 const node : any = nodes.get(nodeId);
                 const connectedEdges = network.getConnectedEdges(nodeId).map(id => Number(id));
                 if (!('opacity' in node) || node.opacity === 1) {
                     nodes.updateOnly({ id : nodeId, opacity : 0.2 });
-                    console.log(props.addToProgress)
                     props.addToProgress(nodeId, node.data.areas);
 
                     // const prereqs = node.data.prereqs;
@@ -150,7 +149,7 @@ export default function Graph(props : any) {
                 } else {
                     // set nodes and edges back to normal
                     nodes.updateOnly({ id : nodeId, opacity : 1 });
-                    // props.removeFromProgress(nodeId);
+                    props.removeFromProgress(nodeId);
 
                     connectedEdges.forEach((edgeId) => {
                         const edge = edges.get(edgeId);
@@ -217,6 +216,7 @@ export default function Graph(props : any) {
         // remove highlights on blur
         network.on('blurNode', (event) => {
             const nodeId = event.node;
+            nodes.updateOnly({ id : nodeId , color : options.nodes.color , font : { size : 30 }})
 
             // remove highlights on blur
             const connectedEdges = network.getConnectedEdges(nodeId);
