@@ -33,7 +33,7 @@ function App() {
     if (areas.length > 1) {
       setCurrent({ id , areas })
       setOpen(true)
-    } else {
+    } else if (areas.length == 1) {
       const area = areas[0];
       setProgress(progress => [...progress, { id , area }]);
     }
