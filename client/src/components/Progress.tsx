@@ -4,20 +4,18 @@ import ProgressBar from './ProgressBar';
 
 export default function Progress(props : any) {
     const { progress } = props;
-
-    console.log('PROGRESS')
-    console.log(progress)
     const counts : any = {
-        'core' : 0, 
-        'project' : 0,
-        'technical' : 0,
-        'related' : 0,
-        'breadth' : {}
+        core : 0, 
+        project : 0,
+        technical : 0,
+        related : 0,
+        breadth : {}
     }
-
     const breadths = ['software', 'theory', 'ai', 'interfaces', 'systems'];
     breadths.forEach((area : string) => counts.breadth[area] = 0)
-    progress.forEach((item : { id : number , area : string}) => breadths.includes(item.area) ? counts.breadth[item.area] += 1 : counts[item.area] += 1)
+
+    // increment counts for each area
+    progress.forEach((item : { id : number , area : string }) => breadths.includes(item.area) ? counts.breadth[item.area] += 1 : counts[item.area] += 1)
 
     return (
         <div className="progress">
