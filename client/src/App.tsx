@@ -6,14 +6,12 @@ import AreasDialog from './components/AreasDialog';
 
 function App() {
   const [data, setData] = useState([]);
-  // const [progress, setProgress] = useState<{ id: number, areas: string[]}[]>([]);
   const [progress, setProgress] = useState<{ id: number, area: string}[]>([]);
 
-  const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<{ id: number, areas: string[]}>();
-
+  const [open, setOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<string>();
-
+  
   useEffect(() => {
     fetch('http://localhost:5001/record')
       .then(response => response.json())
@@ -30,13 +28,13 @@ function App() {
   }, [selectedValue, current])
 
   const addToProgress = (id : number, areas : string[]) => {
-    if (areas.length > 1) {
+    if (areas.length === 1) {
+      const area : string = areas[0];
+      setProgress(progress => [...progress, { id , area }]);
+    } else if (areas.length > 1) {
       setCurrent({ id , areas })
       setOpen(true)
       setSelectedValue('');
-    } else if (areas.length == 1) {
-      const area = areas[0];
-      setProgress(progress => [...progress, { id , area }]);
     }
   };
 
@@ -49,13 +47,13 @@ function App() {
       setSelectedValue(value);
   };
   
-  const graph = useMemo(() => <Graph classList={data} addToProgress={addToProgress} removeFromProgress={removeFromProgress} />, [data])
+  const graph = useMemo(() => <Graph classList={ data } addToProgress={ addToProgress } removeFromProgress={ removeFromProgress }/>, [data])
 
   return (
     <div className="App">
       { graph }
       <Progress progress={ progress }/>
-      { current && <AreasDialog current = { current } selectedValue={ current.areas[0] } open={ open } onClose={ handleClose }/>}
+      { current && <AreasDialog current={ current } selectedValue={ current.areas[0] } open={ open } onClose={ handleClose }/>}
     </div>
   );
 }
