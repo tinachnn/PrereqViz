@@ -17,8 +17,6 @@ function App() {
       .then(response => response.json())
       .then(response => setData(response))
       .catch(error => console.log(error));
-
-    setProgress([]);
   }, [])
 
   useEffect(() => {
