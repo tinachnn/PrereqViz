@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './Graph.css';
-import Progress from './Progress';
 import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
 import 'vis-network/styles/vis-network.css';
 
 export default function Graph(props : any) {
-    // const classList : any[] = props.data;
     const { classList } = props
 
     const nodeList : any[] = [];
@@ -96,6 +94,13 @@ export default function Graph(props : any) {
             }
         };
         const network = new Network(container, data, options);
+
+        network.once('stabilizationIterationsDone', () => {
+            const wrapper = document.getElementById('wrapper');
+            if (wrapper) {
+                wrapper.style.display = 'none'
+            }
+        });
 
         const changeConnectedPrereqs = (nodeId : number, edgeId : number, hide : boolean) => {
             const edge = edges.get(edgeId);
@@ -237,7 +242,16 @@ export default function Graph(props : any) {
 
     return (
         <div>
-            <div id="network"></div>
+            <div id="network"></div>       
+            <div id="wrapper">
+                <div className="circle"></div>
+                <div className="circle"></div>
+                <div className="circle"></div>
+                <div className="shadow"></div>
+                <div className="shadow"></div>
+                <div className="shadow"></div>
+                <span>Loading</span>
+            </div>
             <div id="sidebar"></div>
         </div>
     )
