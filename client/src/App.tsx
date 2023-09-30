@@ -6,7 +6,8 @@ import AreasDialog from './components/AreasDialog';
 
 function App() {
   const [data, setData] = useState([]);
-  const [progress, setProgress] = useState<{ id: number, areas: string[]}[]>([]);
+  // const [progress, setProgress] = useState<{ id: number, areas: string[]}[]>([]);
+  const [progress, setProgress] = useState<{ id: number, area: string}[]>([]);
 
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<{ id: number, areas: string[]}>();
@@ -24,7 +25,7 @@ function App() {
 
   useEffect(() => {
     if (selectedValue && current) {
-      setProgress(progress => [...progress, { id : current.id , areas : [selectedValue]}])
+      setProgress(progress => [...progress, { id : current.id , area : selectedValue }])
     }
   }, [selectedValue, current])
 
@@ -33,7 +34,8 @@ function App() {
       setCurrent({ id , areas })
       setOpen(true)
     } else {
-      setProgress(progress => [...progress, { id , areas}]);
+      const area = areas[0];
+      setProgress(progress => [...progress, { id , area }]);
     }
   };
 

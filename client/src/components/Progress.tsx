@@ -27,15 +27,7 @@ export default function Progress(props : any) {
     const breadth = ['software', 'theory', 'ai', 'interfaces', 'systems'];
     breadth.forEach((area : string) => counts[area] = { 'current' : 0 , 'total' : 1 })
 
-    const areasList = progress.map((item : any) => item.areas)
-
-    // round 1 
-    // const assignItem = (areas : string[]) => {
-    //     // only one choice (core, related, technical)
-    //     counts[areas[0]].current += 1;
-    // }
-    console.log(areasList)
-    areasList.forEach((areas : string[]) => counts[areas[0]].current += 1)
+    progress.forEach((item : { id : number , area : string}) => counts[item.area].current += 1)
 
     return (
         <div className="progress">
