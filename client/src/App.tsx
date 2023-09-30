@@ -17,21 +17,20 @@ function App() {
       .then(response => response.json())
       .then(response => setData(response))
       .catch(error => console.log(error));
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (selectedValue && current) {
       setProgress(progress => [...progress, { id : current.id , area : selectedValue }])
     }
-  }, [selectedValue, current])
+  }, [selectedValue, current]);
 
   const addToProgress = (id : number, areas : string[]) => {
     if (areas.length === 1) {
-      const area : string = areas[0];
-      setProgress(progress => [...progress, { id , area }]);
+      setProgress(progress => [...progress, { id : id, area : areas[0]}]);
     } else if (areas.length > 1) {
-      setCurrent({ id , areas })
-      setOpen(true)
+      setCurrent({ id , areas });
+      setOpen(true);
       setSelectedValue('');
     }
   };
@@ -45,7 +44,7 @@ function App() {
       setSelectedValue(value);
   };
   
-  const graph = useMemo(() => <Graph classList={ data } addToProgress={ addToProgress } removeFromProgress={ removeFromProgress }/>, [data])
+  const graph = useMemo(() => <Graph classList={ data } addToProgress={ addToProgress } removeFromProgress={ removeFromProgress }/>, [data]);
 
   return (
     <div className="App">

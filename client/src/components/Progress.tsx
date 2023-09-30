@@ -10,12 +10,13 @@ export default function Progress(props : any) {
         technical : 0,
         related : 0,
         breadth : {}
-    }
+    };
+
     const breadths = ['software', 'theory', 'ai', 'interfaces', 'systems'];
-    breadths.forEach((area : string) => counts.breadth[area] = 0)
+    breadths.forEach((area : string) => counts.breadth[area] = 0);
 
     // increment counts for each area
-    progress.forEach((item : { id : number , area : string }) => breadths.includes(item.area) ? counts.breadth[item.area] += 1 : counts[item.area] += 1)
+    progress.forEach((item : { id : number , area : string }) => breadths.includes(item.area) ? counts.breadth[item.area] += 1 : counts[item.area] += 1);
 
     return (
         <div className="progress">

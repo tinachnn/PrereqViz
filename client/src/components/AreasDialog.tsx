@@ -26,7 +26,8 @@ export default function AreasDialog(props : any) {
       systems : 'systems breadth',
       project : 'project course',
       technical : 'technical elective'
-    }
+    };
+    
     const str = area.replace(/software|theory|ai|interfaces|systems|project|technical/gi, (match : string) => names[match]);
     return str.split(' ').map((word : string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
