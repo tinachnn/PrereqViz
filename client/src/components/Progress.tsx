@@ -4,8 +4,8 @@ import ProgressBar from './ProgressBar';
 
 export default function Progress(props : any) {
     const { progress } = props;
-    console.log('AREAS')
-    console.log(progress.areas)
+    console.log('PROGRESS')
+    console.log(progress)
     const counts : any = {
         'core' : {
             'current' : 0,
