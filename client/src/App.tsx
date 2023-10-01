@@ -13,7 +13,7 @@ function App() {
   const [selectedValue, setSelectedValue] = useState<string>();
   
   useEffect(() => {
-    fetch('https://18.189.64.184/record')
+    fetch('http://localhost:5001/record')
       .then(response => response.json())
       .then(response => setData(response))
       .catch(error => console.log(error));
