@@ -18,10 +18,12 @@ export default function Progress(props : any) {
     // increment counts for each area
     progress.forEach((item : { id : number , area : string }) => breadths.includes(item.area) ? counts.breadth[item.area] += 1 : counts[item.area] += 1);
 
+    const breadthCount : number = Object.values(counts.breadth).map((count : any) => count >= 1 ? 1  : 0).reduce((a : number, b : number) => a + b, 0)
+
     return (
         <div className="progress">
             <ProgressBar current={ counts.core } total={6} cat='Required'/>
-            <ProgressBar current={ Object.values(counts.breadth).reduce((a : any, b : any) => a + b, 0) } total={5} counts={ counts.breadth } cat='Breadth'/>
+            <ProgressBar current={ breadthCount } total={5} cat='Breadth'/>
             <ProgressBar current={ counts.project } total={2} cat='Project'/>
             <ProgressBar current={ counts.technical } total={6} cat='Technical'/>
             <ProgressBar current={ counts.related } total={5} cat='Related'/>
